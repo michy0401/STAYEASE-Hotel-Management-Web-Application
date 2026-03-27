@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Gestión de Habitaciones</h2>
+    <a href="{{ url_for('add_room') }}" class="btn">+ Agregar Habitación</a>
+</div>
+
+<div class="card" id="room-status-panel">
+    <table>
+        <thead>
+            <tr>
+                <th>Número</th>
+                <th>Tipo</th>
+                <th>Piso</th>
+                <th>Capacidad</th>
+                <th>Precio / Noche</th>
+                <th>Estado Actual</th>
+                <th>Forzar Estado (Manual)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for room in rooms %}
+            <tr>
+                <td><strong>{{ room.room_number }}</strong></td>
+                <td>{{ room.room_type | capitalize }}</td>
+                <td>{{ room.floor }}</td>
+                <td>{{ room.capacity }} pers.</td>
+                <td>${{ room.price_per_night }}</td>
+                <td><span id="room-status-{{ room.id }}" class="badge status-{{ room.status }}">{{ room.status }}</span>
+                </td>
+                <td>
+                    <form method="POST" action="{{ url_for('update_room_status', room_id=room.id) }}"
+                        style="display: flex; gap: 5px;">
+                        <select name="status" class="form-control" style="width: auto; padding: 0.25rem;">
+                            <option value="available">Disponible</option>
+                            <option value="cleaning">Limpieza</option>
+                            <option value="maintenance">Mantenimiento</option>
+                        </select>
+                        <button type="submit" class="btn btn-sm">Ok</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="header-action" style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Mi Panel de Trabajo</h2>
+    <a href="{{ url_for('new_reservation') }}" class="btn">+ Nueva Reserva</a>
+</div>
+
+<div class="card">
+    <h3>Mis Reservas Gestionadas</h3>
+    {% if reservations %}
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Huésped (ID)</th>
+                <th>Habitación (ID)</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Total</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for res in reservations %}
+            <tr>
+                <td>#{{ res.id }}</td>
+                <td>{{ res.guest_id }}</td>
+                <td>{{ res.room_id }}</td>
+                <td>{{ res.check_in_date }}</td>
+                <td>{{ res.check_out_date }}</td>
+                <td>${{ res.total_amount }}</td>
+                <td><span class="badge status-{{ res.status }}">{{ res.status }}</span></td>
+                <td>
+                    <div style="display: flex; gap: 5px;">
+                        {% if res.status == 'confirmed' %}
+                        <form method="POST" action="{{ url_for('update_reservation_status', reservation_id=res.id) }}">
+                            <input type="hidden" name="status" value="checked_in">
+                            <button type="submit" class="btn btn-sm" style="background-color: #10b981;">Check
+                                In</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('update_reservation_status', reservation_id=res.id) }}">
+                            <input type="hidden" name="status" value="cancelled">
+                            <button type="submit" class="btn btn-sm"
+                                style="background-color: #ef4444;">Cancelar</button>
+                        </form>
+                        {% elif res.status == 'checked_in' %}
+                        <form method="POST" action="{{ url_for('update_reservation_status', reservation_id=res.id) }}">
+                            <input type="hidden" name="status" value="checked_out">
+                            <button type="submit" class="btn btn-sm" style="background-color: #f59e0b;">Check
+                                Out</button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>Aún no has gestionado ninguna reserva.</p>
+    {% endif %}
+</div>
+{% endblock %}

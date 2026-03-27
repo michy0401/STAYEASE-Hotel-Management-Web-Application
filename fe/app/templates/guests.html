@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Directorio de Huéspedes</h2>
+    <a href="{{ url_for('add_guest') }}" class="btn">+ Registrar Huésped</a>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre Completo</th>
+                <th>Correo Electrónico</th>
+                <th>Teléfono</th>
+                <th>Documento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for guest in guests %}
+            <tr>
+                <td>#{{ guest.id }}</td>
+                <td><strong>{{ guest.full_name }}</strong></td>
+                <td>{{ guest.email }}</td>
+                <td>{{ guest.phone or 'N/A' }}</td>
+                <td>{{ guest.document_id or 'N/A' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

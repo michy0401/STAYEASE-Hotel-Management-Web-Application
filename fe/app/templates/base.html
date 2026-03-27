@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StayEase - Gestión Hotelera</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <h2>🏨 StayEase</h2>
+        </div>
+        <div class="nav-links">
+            {% if session.get('token') %}
+            <a href="{{ url_for('dashboard') }}">Mi Dashboard</a>
+            <a href="{{ url_for('rooms') }}">Habitaciones</a>
+            <a href="{{ url_for('guests') }}">Huéspedes</a>
+            <a href="{{ url_for('reservations') }}">Reservas Totales</a>
+            <a href="{{ url_for('logout') }}">Salir ({{ session.get('username') }})</a>
+            {% else %}
+            <a href="{{ url_for('login') }}">Iniciar Sesión</a>
+            <a href="{{ url_for('register') }}">Registrarse</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+        </div>
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <div id="notification-toast"></div>
+
+    {% if session.get('token') %}
+    <script>
+        // Nos conectamos al servidor WebSocket enviando nuestro token
+        const token = "{{ session.get('token') }}";
+        // Usamos localhost:8000 para que tu navegador se conecte directamente al backend
+        const ws = new WebSocket(`ws://localhost:8000/ws/notifications?token=${token}`);
+
+        ws.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+
+            // Si es un evento de actualización de habitación (Broadcast)
+            if (data.type === "room_status_update") {
+                // Buscamos si la habitación está en la pantalla actual
+                const statusBadge = document.getElementById(`room-status-${data.room_id}`);
+                if (statusBadge) {
+                    // Actualizamos el texto y el color en tiempo real
+                    statusBadge.textContent = data.new_status;
+                    statusBadge.className = `badge status-${data.new_status}`;
+                }
+            }
+            // Si es una notificación personal
+            else {
+                const toast = document.getElementById("notification-toast");
+                toast.textContent = `🔔 ${data.title}: ${data.message}`;
+                toast.style.display = "block";
+
+                // Ocultar después de 5 segundos
+                setTimeout(() => {
+                    toast.style.display = "none";
+                }, 5000);
+            }
+        };
+
+        ws.onclose = function (event) {
+            console.log("WebSocket desconectado");
+        };
+    </script>
+    {% endif %}
+</body>
+
+</html>

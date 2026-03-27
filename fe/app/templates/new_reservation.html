@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 0 auto;">
+    <h2>Crear Reserva</h2>
+    <form method="POST" action="{{ url_for('new_reservation') }}">
+        <div class="form-group">
+            <label>Seleccionar Huésped</label>
+            <select name="guest_id" class="form-control" required>
+                <option value="">-- Elige un huésped --</option>
+                {% for guest in guests %}
+                <option value="{{ guest.id }}">{{ guest.full_name }} ({{ guest.email }})</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Seleccionar Habitación (Solo Disponibles)</label>
+            <select name="room_id" class="form-control" required>
+                <option value="">-- Elige una habitación --</option>
+                {% for room in rooms %}
+                <option value="{{ room.id }}">Hab: {{ room.room_number }} - {{ room.room_type | capitalize }} (${{
+                    room.price_per_night }}/noche)</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div style="display: flex; gap: 1rem;">
+            <div class="form-group" style="flex: 1;">
+                <label>Fecha de Entrada (Check-in)</label>
+                <input type="date" name="check_in_date" class="form-control" required>
+            </div>
+            <div class="form-group" style="flex: 1;">
+                <label>Fecha de Salida (Check-out)</label>
+                <input type="date" name="check_out_date" class="form-control" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Notas Especiales (Opcional)</label>
+            <textarea name="notes" class="form-control" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn" style="width: 100%;">Confirmar Reserva</button>
+    </form>
+</div>
+{% endblock %}

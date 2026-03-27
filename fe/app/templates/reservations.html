@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center;">
+    <h2>Todas las Reservas (Global)</h2>
+    <a href="{{ url_for('new_reservation') }}" class="btn">+ Nueva Reserva</a>
+</div>
+
+<div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Huésped</th>
+                <th>Habitación</th>
+                <th>Atendido por</th>
+                <th>Check-in</th>
+                <th>Check-out</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for res in reservations %}
+            <tr>
+                <td>#{{ res.id }}</td>
+                <td>ID: {{ res.guest_id }}</td>
+                <td>ID: {{ res.room_id }}</td>
+                <td>Personal ID: {{ res.staff_id }}</td>
+                <td>{{ res.check_in_date }}</td>
+                <td>{{ res.check_out_date }}</td>
+                <td><span class="badge status-{{ res.status }}">{{ res.status }}</span></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
